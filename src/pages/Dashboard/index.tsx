@@ -17,7 +17,7 @@ interface GithubRepository {
 export const Dashboard: React.FC = () => {
 
   const [repos, setRepos] = React.useState<GithubRepository[]>(() => {
-    const storageRepos = localStorage.getItem('@GitCollection:repositories')
+  const storageRepos = localStorage.getItem('@GitCollection:repositories')
 
     if (storageRepos) {
       return JSON.parse(storageRepos);
@@ -27,6 +27,7 @@ export const Dashboard: React.FC = () => {
   });
   const [newRepo, setNewRepo] = React.useState('repos/${newRepo}');
   const [inputError, setInputError] = React.useState('');
+  const formEl = React.useRef<HTMLFormElement | null >(null);
 
   React.useEffect(() => {
     localStorage.setItem('@GitCollection:repositories', JSON.stringify(repos));
@@ -51,6 +52,7 @@ export const Dashboard: React.FC = () => {
       const repository = response.data;
 
       setRepos([...repos, repository]);
+      formEl.current?.reset();
       setNewRepo('');
       setInputError(''); // Reset the input error when the API call is successful
     } catch (error) {
@@ -62,7 +64,8 @@ export const Dashboard: React.FC = () => {
       <img src={logo} alt="GitCollection" />
 
       <Title>Catálogo de Repositórios do GitHub</Title>
-      <Form hasError={Boolean(inputError)} onSubmit={handleAddRepo}>
+      
+      <Form ref={formEl} hasError={Boolean(inputError)} onSubmit={handleAddRepo}>
         <input placeholder="username/repositorie" onChange={handleInputChange} />
         <button type='submit'>Buscar</button>
       </Form>
