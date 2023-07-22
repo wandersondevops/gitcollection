@@ -1,8 +1,8 @@
 import React from 'react';
-import {FiChevronRight} from 'react-icons/fi'
-import {api} from '../../services/api'
-
-import {Title, Form, Repos, Error} from './styles'
+import { FiChevronRight } from 'react-icons/fi'
+import { api } from '../../services/api'
+import { Link } from 'react-router-dom'
+import { Title, Form, Repos, Error } from './styles'
 
 import logo from '../../assets/logo.svg'
 
@@ -18,17 +18,17 @@ export const Dashboard: React.FC = () => {
 
   const [repos, setRepos] = React.useState<GithubRepository[]>(() => {
     const storageRepos = localStorage.getItem('@GitCollection:repositories')
-  
-    if (storageRepos){
+
+    if (storageRepos) {
       return JSON.parse(storageRepos);
     }
     return [];
-  
-  });  
+
+  });
   const [newRepo, setNewRepo] = React.useState('repos/${newRepo}');
   const [inputError, setInputError] = React.useState('');
 
-  React.useEffect(() =>{
+  React.useEffect(() => {
     localStorage.setItem('@GitCollection:repositories', JSON.stringify(repos));
   }, [repos]);
 
@@ -38,14 +38,14 @@ export const Dashboard: React.FC = () => {
 
   async function handleAddRepo(
     event: React.FormEvent<HTMLFormElement>,
-    ): Promise<void> {
+  ): Promise<void> {
     event.preventDefault();
-  
-    if(!newRepo){
+
+    if (!newRepo) {
       setInputError('Informe o username/repositório')
       return;
     }
-    
+
     try {
       const response = await api.get<GithubRepository>(`repos/${newRepo}`);
       const repository = response.data;
@@ -58,33 +58,29 @@ export const Dashboard: React.FC = () => {
     }
   }
   return (
-      <>
-        <img src={logo} alt="GitCollection"/>
+    <>
+      <img src={logo} alt="GitCollection" />
 
-        <Title>Catálogo de Repositórios do GitHub</Title>
-        <Form hasError={Boolean(inputError)} onSubmit={handleAddRepo}>
-          <input placeholder="username/repositorie" onChange={handleInputChange}/>
-          <button type='submit'>Buscar</button>
-        </Form>
+      <Title>Catálogo de Repositórios do GitHub</Title>
+      <Form hasError={Boolean(inputError)} onSubmit={handleAddRepo}>
+        <input placeholder="username/repositorie" onChange={handleInputChange} />
+        <button type='submit'>Buscar</button>
+      </Form>
 
-        {inputError && <Error>{inputError}</Error>}
+      {inputError && <Error>{inputError}</Error>}
 
-        <Repos>
-          {repos.map(repository => (
-            <a href="/repositories" key={repository.full_name}>
-            <img 
-              src={repository.owner.avatar_url} 
-              alt={repository.owner.login}
-            />
+      <Repos>
+        {repos.map(repository => (
+          <Link to={`/repositories/${repository.full_name}`} key={repository.full_name}>
+            <img src={repository.owner.avatar_url} alt={repository.owner.login} />
             <div>
               <strong>{repository.full_name}</strong>
               <p>{repository.description}</p>
             </div>
-            <FiChevronRight size={20}/>
-          </a>
-          ))}
-        </Repos>
-      </>
-    );
-  };
-  
+            <FiChevronRight size={20} />
+          </Link>
+        ))}
+      </Repos>;
+    </>
+  );
+};

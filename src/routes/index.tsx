@@ -8,10 +8,10 @@ export const Routes: React.FC = () => {
       return (
         <Switch>
             <Route component={Dashboard} path="/" exact />
-            <Route component={Repo} path="/repositories" />
+            <Route component={Repo} path="/repositories/:repository+" />
         </Switch>
       );
-   
+ 
   };
   
 
